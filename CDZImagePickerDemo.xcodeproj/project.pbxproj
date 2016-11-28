@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA0C162C1DE826D400FA97CB /* UIView+CDZExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */; };
+		DA0C16321DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */; };
+		DA0C16351DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */; };
 		DA8F9CC71DE5C92D0050A1EE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CC61DE5C92D0050A1EE /* main.m */; };
 		DA8F9CCA1DE5C92D0050A1EE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CC91DE5C92D0050A1EE /* AppDelegate.m */; };
 		DA8F9CCD1DE5C92D0050A1EE /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CCC1DE5C92D0050A1EE /* ViewController.m */; };
@@ -18,10 +21,15 @@
 		DAEAC2931DE6CFDD00C5155D /* CDZImagePickerConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC2921DE6CFDD00C5155D /* CDZImagePickerConstant.m */; };
 		DAEAC2991DE6E96900C5155D /* CDZImagePickerActionsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC2981DE6E96900C5155D /* CDZImagePickerActionsCell.m */; };
 		DAEAC29C1DE715A700C5155D /* CDZImagePickerActionsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC29B1DE715A700C5155D /* CDZImagePickerActionsDataSource.m */; };
-		DAEAC29F1DE717DF00C5155D /* CDZImagePickerActionsSection.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC29E1DE717DF00C5155D /* CDZImagePickerActionsSection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DA0C162A1DE826D400FA97CB /* UIView+CDZExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+CDZExtension.h"; path = "CDZImagePicker/UIView+CDZExtension.h"; sourceTree = "<group>"; };
+		DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+CDZExtension.m"; path = "CDZImagePicker/UIView+CDZExtension.m"; sourceTree = "<group>"; };
+		DA0C16301DE8412C00FA97CB /* CDZImagePIckerPhotosCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePIckerPhotosCell.h; path = CDZImagePicker/CDZImagePIckerPhotosCell.h; sourceTree = "<group>"; };
+		DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePIckerPhotosCell.m; path = CDZImagePicker/CDZImagePIckerPhotosCell.m; sourceTree = "<group>"; };
+		DA0C16331DE868E200FA97CB /* CDZImagePickerPhotosDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerPhotosDataSource.h; path = CDZImagePicker/CDZImagePickerPhotosDataSource.h; sourceTree = "<group>"; };
+		DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerPhotosDataSource.m; path = CDZImagePicker/CDZImagePickerPhotosDataSource.m; sourceTree = "<group>"; };
 		DA8F9CC21DE5C92D0050A1EE /* CDZImagePickerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CDZImagePickerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA8F9CC61DE5C92D0050A1EE /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DA8F9CC81DE5C92D0050A1EE /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -42,8 +50,6 @@
 		DAEAC2981DE6E96900C5155D /* CDZImagePickerActionsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerActionsCell.m; path = CDZImagePicker/CDZImagePickerActionsCell.m; sourceTree = "<group>"; };
 		DAEAC29A1DE715A700C5155D /* CDZImagePickerActionsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerActionsDataSource.h; path = CDZImagePicker/CDZImagePickerActionsDataSource.h; sourceTree = "<group>"; };
 		DAEAC29B1DE715A700C5155D /* CDZImagePickerActionsDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerActionsDataSource.m; path = CDZImagePicker/CDZImagePickerActionsDataSource.m; sourceTree = "<group>"; };
-		DAEAC29D1DE717DF00C5155D /* CDZImagePickerActionsSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerActionsSection.h; path = CDZImagePicker/CDZImagePickerActionsSection.h; sourceTree = "<group>"; };
-		DAEAC29E1DE717DF00C5155D /* CDZImagePickerActionsSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerActionsSection.m; path = CDZImagePicker/CDZImagePickerActionsSection.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +63,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DA0C16361DE882CA00FA97CB /* PhotosCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				DA0C16331DE868E200FA97CB /* CDZImagePickerPhotosDataSource.h */,
+				DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */,
+				DA0C16301DE8412C00FA97CB /* CDZImagePIckerPhotosCell.h */,
+				DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */,
+			);
+			name = PhotosCollectionView;
+			sourceTree = "<group>";
+		};
 		DA8F9CB91DE5C92D0050A1EE = {
 			isa = PBXGroup;
 			children = (
@@ -103,26 +120,27 @@
 			children = (
 				DA8F9CE01DE5CBDB0050A1EE /* CDZImagePickerViewController.h */,
 				DA8F9CE11DE5CBDB0050A1EE /* CDZImagePickerViewController.m */,
+				DAEAC2A01DE7425B00C5155D /* ActionsTableView */,
+				DA0C16361DE882CA00FA97CB /* PhotosCollectionView */,
+				DA0C162A1DE826D400FA97CB /* UIView+CDZExtension.h */,
+				DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */,
 				DAEAC2911DE6CFDD00C5155D /* CDZImagePickerConstant.h */,
 				DAEAC2921DE6CFDD00C5155D /* CDZImagePickerConstant.m */,
-				DAEAC2A01DE7425B00C5155D /* ActionsTableview */,
 			);
 			name = CDZImagePicker;
 			sourceTree = "<group>";
 		};
-		DAEAC2A01DE7425B00C5155D /* ActionsTableview */ = {
+		DAEAC2A01DE7425B00C5155D /* ActionsTableView */ = {
 			isa = PBXGroup;
 			children = (
 				DAEAC29A1DE715A700C5155D /* CDZImagePickerActionsDataSource.h */,
 				DAEAC29B1DE715A700C5155D /* CDZImagePickerActionsDataSource.m */,
-				DAEAC29D1DE717DF00C5155D /* CDZImagePickerActionsSection.h */,
-				DAEAC29E1DE717DF00C5155D /* CDZImagePickerActionsSection.m */,
 				DAEAC2971DE6E96900C5155D /* CDZImagePickerActionsCell.h */,
 				DAEAC2981DE6E96900C5155D /* CDZImagePickerActionsCell.m */,
 				DAEAC28E1DE6BE3800C5155D /* CDZImagePickerActionsItem.h */,
 				DAEAC28F1DE6BE3800C5155D /* CDZImagePickerActionsItem.m */,
 			);
-			name = ActionsTableview;
+			name = ActionsTableView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,11 +219,13 @@
 				DAEAC2991DE6E96900C5155D /* CDZImagePickerActionsCell.m in Sources */,
 				DA8F9CCD1DE5C92D0050A1EE /* ViewController.m in Sources */,
 				DAEAC2901DE6BE3800C5155D /* CDZImagePickerActionsItem.m in Sources */,
+				DA0C16321DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m in Sources */,
 				DAEAC29C1DE715A700C5155D /* CDZImagePickerActionsDataSource.m in Sources */,
+				DA0C16351DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m in Sources */,
 				DA8F9CCA1DE5C92D0050A1EE /* AppDelegate.m in Sources */,
+				DA0C162C1DE826D400FA97CB /* UIView+CDZExtension.m in Sources */,
 				DA8F9CC71DE5C92D0050A1EE /* main.m in Sources */,
 				DAEAC2931DE6CFDD00C5155D /* CDZImagePickerConstant.m in Sources */,
-				DAEAC29F1DE717DF00C5155D /* CDZImagePickerActionsSection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

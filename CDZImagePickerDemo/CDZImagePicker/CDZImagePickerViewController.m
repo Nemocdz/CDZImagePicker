@@ -5,29 +5,36 @@
 //  Created by Nemocdz on 2016/11/23.
 //  Copyright © 2016年 Nemocdz. All rights reserved.
 //
-
-
+#import "UIView+CDZExtension.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+
+#import <Photos/Photos.h>
+
 #import "CDZImagePickerViewController.h"
 
 #import "CDZImagePickerActionsItem.h"
 #import "CDZImagePickerActionsCell.h"
 #import "CDZImagePickerActionsDataSource.h"
-#import "CDZImagePickerActionsSection.h"
+
+#import "CDZImagePIckerPhotosCell.h"
+#import "CDZImagePickerPhotosDataSource.h"
 
 static const float tableViewCellHeight = 54.0;
 
-@interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UITableViewDataSource,UIGestureRecognizerDelegate>
+@interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate>
 @property (nonatomic ,copy) CDZImageResultBlock block;
-@property (nonatomic ,strong) UIViewController *sourceVC;
-//@property (nonatomic ,strong) NSArray *actionArray;
+
+@property (nonatomic ,strong) NSMutableArray *actionArray;
+@property (nonatomic ,strong) NSMutableArray *photosArray;
+
 @property (nonatomic ,strong) UITableView *actionView;
 @property (nonatomic ,strong) UIView *backgroundView;
 @property (nonatomic ,strong) CDZImagePickerActionsDataSource *actionsDataSource;
-@property (nonatomic ,strong) CDZImagePickerActionsSection *actionsSection;
+@property (nonatomic ,strong) CDZImagePickerPhotosDataSource *photosDataSource;
+@property (nonatomic ,strong) UICollectionView *photosView;
 
 @end
 
@@ -39,6 +46,7 @@ static const float tableViewCellHeight = 54.0;
     [super viewDidLoad];
     [self.view addSubview:self.backgroundView];
     [self.view addSubview:self.actionView];
+    [self.view addSubview:self.photosView];
 }
 
 + (void)openPickerInView:(UIView *)view inController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
@@ -126,24 +134,39 @@ static const float tableViewCellHeight = 54.0;
     NSLog(@"获取照片");
 }
 
-
-
-
-
 #pragma mark - tableViewDelegate
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     return tableViewCellHeight;
 }
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    CDZImagePickerActionsSection *sectionObject = self.actionsDataSource.sections[indexPath.row];
-    CDZImagePickerActionsItem *item = sectionObject.items[indexPath.row];
+   // CDZImagePickerActionsSection *sectionObject = self.actionsDataSource.sections[indexPath.row];
+    CDZImagePickerActionsItem *item = self.actionArray[indexPath.row];
     [self doActionsWithType:item.actionType];
 }
 
+#pragma mark - collectionViewDelegate
+
 
 #pragma setter&getter
+- (UICollectionView *)photosView{
+    if (!_photosView){
+        CGFloat photosViewHeight = 130;
+        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
+        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        layout.itemSize = CGSizeMake(130, 130);
+        _photosView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT - self.actionView.height - photosViewHeight , SCREEN_WIDTH, photosViewHeight) collectionViewLayout:layout];
+        _photosView.delegate = self;
+        _photosView.dataSource = self.photosDataSource;
+        _photosView.backgroundColor = [UIColor whiteColor];
+        [_photosView registerClass:[CDZImagePIckerPhotosCell class] forCellWithReuseIdentifier:NSStringFromClass([CDZImagePIckerPhotosCell class])];
+    }
+    return _photosView;
+}
+
+
 - (UIView *)backgroundView{
     if (!_backgroundView){
         _backgroundView =[[UIView alloc]initWithFrame:self.view.bounds];
@@ -157,9 +180,8 @@ static const float tableViewCellHeight = 54.0;
 
 - (UITableView *)actionView{
     if (!_actionView) {
-        CGFloat actionsViewHeight = tableViewCellHeight * self.actionsSection.items.count;
+        CGFloat actionsViewHeight = tableViewCellHeight * self.actionArray.count;
         _actionView = [[UITableView alloc]initWithFrame:CGRectMake(0,SCREEN_HEIGHT - actionsViewHeight ,SCREEN_WIDTH, actionsViewHeight) style:UITableViewStylePlain];
-        _actionView.backgroundColor = [UIColor redColor];
         _actionView.scrollEnabled = NO;
         _actionView.separatorStyle = UITableViewCellSeparatorStyleNone;
         _actionView.delegate = self;
@@ -172,20 +194,53 @@ static const float tableViewCellHeight = 54.0;
 - (CDZImagePickerActionsDataSource *)actionsDataSource{
     if (!_actionsDataSource) {
         _actionsDataSource = [[CDZImagePickerActionsDataSource alloc]init];
-        _actionsDataSource.sections = [NSMutableArray arrayWithObject:self.actionsSection];
+        _actionsDataSource.itemArray = self.actionArray;
     }
     return _actionsDataSource;
 }
 
-- (CDZImagePickerActionsSection *)actionsSection{
-    if (!_actionsSection) {
-        _actionsSection = [[CDZImagePickerActionsSection alloc]init];
-        _actionsSection.items =[NSMutableArray arrayWithObjects:[[CDZImagePickerActionsItem alloc]initWithTitle:@"图库" withActionType:CDZImagePickerLibraryAction withImage:nil],
-                              [[CDZImagePickerActionsItem alloc]initWithTitle:@"拍照" withActionType:CDZImagePickerCameraAction withImage:nil],
-                              [[CDZImagePickerActionsItem alloc]initWithTitle:@"最新" withActionType:CDZImagePickerRecentAction withImage:nil],
-                              nil];
+- (CDZImagePickerPhotosDataSource *)photosDataSource{
+    if (!_photosDataSource){
+        _photosDataSource = [[CDZImagePickerPhotosDataSource alloc]init];
+        _photosDataSource.itemArray = self.photosArray;
     }
-    return _actionsSection;
+    return _photosDataSource;
 }
+
+- (NSMutableArray *)actionArray{
+    if (!_actionArray){
+        _actionArray = [NSMutableArray arrayWithObjects:
+                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"图库" withActionType:CDZImagePickerLibraryAction withImage:nil],
+                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"拍照" withActionType:CDZImagePickerCameraAction withImage:nil],
+                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"最新" withActionType:CDZImagePickerRecentAction withImage:nil],
+                        nil];
+    }
+    return _actionArray;
+}
+
+- (NSMutableArray *)photosArray{
+    if (!_photosArray){
+        _photosArray = [NSMutableArray new];
+        [self getAllPhotoWithBlock:^(PHAsset *asset) {
+            [_photosArray insertObject:asset atIndex:0];
+        }];
+
+    }
+    return _photosArray;
+}
+
+
+- (void)getAllPhotoWithBlock:(CDZImageAssetBlock)block{
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *collection in smartAlbums) {
+        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
+            PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+            for (PHAsset *asset in assets){
+            block(asset);
+            }
+        }
+    }
+}
+
 
 @end
