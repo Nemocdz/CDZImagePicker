@@ -24,7 +24,7 @@
 
 - (void)setCellFromItem:(CDZImagePickerActionsItem *)item{
     self.textLabel.text = item.actionTitle;
-    self.textLabel.textColor = [UIColor colorWithRed:0.29 green:0.30 blue:0.30 alpha:1.00];
+    self.textLabel.textColor = [UIColor colorWithRed:0.30 green:0.30 blue:0.30 alpha:1.00];
     self.textLabel.font = [UIFont systemFontOfSize:18.0f];
     self.textLabel.textAlignment = NSTextAlignmentCenter;
     self.selectionStyle = UITableViewCellSelectionStyleNone;//点击不变色

@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DA0C162C1DE826D400FA97CB /* UIView+CDZExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */; };
-		DA0C16321DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */; };
+		DA0C16321DE8412C00FA97CB /* CDZImagePickerPhotosCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C16311DE8412C00FA97CB /* CDZImagePickerPhotosCell.m */; };
 		DA0C16351DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */; };
 		DA8F9CC71DE5C92D0050A1EE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CC61DE5C92D0050A1EE /* main.m */; };
 		DA8F9CCA1DE5C92D0050A1EE /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CC91DE5C92D0050A1EE /* AppDelegate.m */; };
@@ -18,16 +17,13 @@
 		DA8F9CD51DE5C92D0050A1EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA8F9CD31DE5C92D0050A1EE /* LaunchScreen.storyboard */; };
 		DA8F9CE21DE5CBDB0050A1EE /* CDZImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8F9CE11DE5CBDB0050A1EE /* CDZImagePickerViewController.m */; };
 		DAEAC2901DE6BE3800C5155D /* CDZImagePickerActionsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC28F1DE6BE3800C5155D /* CDZImagePickerActionsItem.m */; };
-		DAEAC2931DE6CFDD00C5155D /* CDZImagePickerConstant.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC2921DE6CFDD00C5155D /* CDZImagePickerConstant.m */; };
 		DAEAC2991DE6E96900C5155D /* CDZImagePickerActionsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC2981DE6E96900C5155D /* CDZImagePickerActionsCell.m */; };
 		DAEAC29C1DE715A700C5155D /* CDZImagePickerActionsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = DAEAC29B1DE715A700C5155D /* CDZImagePickerActionsDataSource.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		DA0C162A1DE826D400FA97CB /* UIView+CDZExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+CDZExtension.h"; path = "CDZImagePicker/UIView+CDZExtension.h"; sourceTree = "<group>"; };
-		DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+CDZExtension.m"; path = "CDZImagePicker/UIView+CDZExtension.m"; sourceTree = "<group>"; };
-		DA0C16301DE8412C00FA97CB /* CDZImagePIckerPhotosCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePIckerPhotosCell.h; path = CDZImagePicker/CDZImagePIckerPhotosCell.h; sourceTree = "<group>"; };
-		DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePIckerPhotosCell.m; path = CDZImagePicker/CDZImagePIckerPhotosCell.m; sourceTree = "<group>"; };
+		DA0C16301DE8412C00FA97CB /* CDZImagePickerPhotosCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerPhotosCell.h; path = CDZImagePicker/CDZImagePickerPhotosCell.h; sourceTree = "<group>"; };
+		DA0C16311DE8412C00FA97CB /* CDZImagePickerPhotosCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerPhotosCell.m; path = CDZImagePicker/CDZImagePickerPhotosCell.m; sourceTree = "<group>"; };
 		DA0C16331DE868E200FA97CB /* CDZImagePickerPhotosDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerPhotosDataSource.h; path = CDZImagePicker/CDZImagePickerPhotosDataSource.h; sourceTree = "<group>"; };
 		DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerPhotosDataSource.m; path = CDZImagePicker/CDZImagePickerPhotosDataSource.m; sourceTree = "<group>"; };
 		DA8F9CC21DE5C92D0050A1EE /* CDZImagePickerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CDZImagePickerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,7 +41,6 @@
 		DAEAC28E1DE6BE3800C5155D /* CDZImagePickerActionsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerActionsItem.h; path = CDZImagePicker/CDZImagePickerActionsItem.h; sourceTree = "<group>"; };
 		DAEAC28F1DE6BE3800C5155D /* CDZImagePickerActionsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerActionsItem.m; path = CDZImagePicker/CDZImagePickerActionsItem.m; sourceTree = "<group>"; };
 		DAEAC2911DE6CFDD00C5155D /* CDZImagePickerConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDZImagePickerConstant.h; sourceTree = "<group>"; };
-		DAEAC2921DE6CFDD00C5155D /* CDZImagePickerConstant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CDZImagePickerConstant.m; sourceTree = "<group>"; };
 		DAEAC2971DE6E96900C5155D /* CDZImagePickerActionsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerActionsCell.h; path = CDZImagePicker/CDZImagePickerActionsCell.h; sourceTree = "<group>"; };
 		DAEAC2981DE6E96900C5155D /* CDZImagePickerActionsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDZImagePickerActionsCell.m; path = CDZImagePicker/CDZImagePickerActionsCell.m; sourceTree = "<group>"; };
 		DAEAC29A1DE715A700C5155D /* CDZImagePickerActionsDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDZImagePickerActionsDataSource.h; path = CDZImagePicker/CDZImagePickerActionsDataSource.h; sourceTree = "<group>"; };
@@ -68,8 +63,8 @@
 			children = (
 				DA0C16331DE868E200FA97CB /* CDZImagePickerPhotosDataSource.h */,
 				DA0C16341DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m */,
-				DA0C16301DE8412C00FA97CB /* CDZImagePIckerPhotosCell.h */,
-				DA0C16311DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m */,
+				DA0C16301DE8412C00FA97CB /* CDZImagePickerPhotosCell.h */,
+				DA0C16311DE8412C00FA97CB /* CDZImagePickerPhotosCell.m */,
 			);
 			name = PhotosCollectionView;
 			sourceTree = "<group>";
@@ -122,10 +117,7 @@
 				DA8F9CE11DE5CBDB0050A1EE /* CDZImagePickerViewController.m */,
 				DAEAC2A01DE7425B00C5155D /* ActionsTableView */,
 				DA0C16361DE882CA00FA97CB /* PhotosCollectionView */,
-				DA0C162A1DE826D400FA97CB /* UIView+CDZExtension.h */,
-				DA0C162B1DE826D400FA97CB /* UIView+CDZExtension.m */,
 				DAEAC2911DE6CFDD00C5155D /* CDZImagePickerConstant.h */,
-				DAEAC2921DE6CFDD00C5155D /* CDZImagePickerConstant.m */,
 			);
 			name = CDZImagePicker;
 			sourceTree = "<group>";
@@ -219,13 +211,11 @@
 				DAEAC2991DE6E96900C5155D /* CDZImagePickerActionsCell.m in Sources */,
 				DA8F9CCD1DE5C92D0050A1EE /* ViewController.m in Sources */,
 				DAEAC2901DE6BE3800C5155D /* CDZImagePickerActionsItem.m in Sources */,
-				DA0C16321DE8412C00FA97CB /* CDZImagePIckerPhotosCell.m in Sources */,
+				DA0C16321DE8412C00FA97CB /* CDZImagePickerPhotosCell.m in Sources */,
 				DAEAC29C1DE715A700C5155D /* CDZImagePickerActionsDataSource.m in Sources */,
 				DA0C16351DE868E200FA97CB /* CDZImagePickerPhotosDataSource.m in Sources */,
 				DA8F9CCA1DE5C92D0050A1EE /* AppDelegate.m in Sources */,
-				DA0C162C1DE826D400FA97CB /* UIView+CDZExtension.m in Sources */,
 				DA8F9CC71DE5C92D0050A1EE /* main.m in Sources */,
-				DAEAC2931DE6CFDD00C5155D /* CDZImagePickerConstant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

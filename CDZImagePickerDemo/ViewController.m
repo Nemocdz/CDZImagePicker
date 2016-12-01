@@ -11,6 +11,7 @@
 
 @interface ViewController ()
 - (IBAction)openPicker:(UIButton *)sender;
+@property (strong, nonatomic) IBOutlet UIImageView *imageView;
 
 @end
 
@@ -21,16 +22,9 @@
     // Do any additional setup after loading the view, typically from a nib.
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-
-
 - (IBAction)openPicker:(UIButton *)sender {
     [CDZImagePickerViewController openPickerInView:self.view inController:self withImageBlock:^(UIImage *image) {
+        self.imageView.image = image;
     }];
 
 }

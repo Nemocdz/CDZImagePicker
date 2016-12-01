@@ -5,14 +5,10 @@
 //  Created by Nemocdz on 2016/11/23.
 //  Copyright © 2016年 Nemocdz. All rights reserved.
 //
-#import "UIView+CDZExtension.h"
-
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
-
 #import <Photos/Photos.h>
-
 #import "CDZImagePickerViewController.h"
 
 #import "CDZImagePickerActionsItem.h"
@@ -22,20 +18,21 @@
 #import "CDZImagePIckerPhotosCell.h"
 #import "CDZImagePickerPhotosDataSource.h"
 
-static const float tableViewCellHeight = 54.0;
-
 @interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate>
+
 @property (nonatomic ,copy) CDZImageResultBlock block;
 
 @property (nonatomic ,strong) NSMutableArray *actionArray;
 @property (nonatomic ,strong) NSMutableArray *photosArray;
 
+@property (nonatomic ,strong) UICollectionView *photosView;
 @property (nonatomic ,strong) UITableView *actionView;
 @property (nonatomic ,strong) UIView *backgroundView;
+
 @property (nonatomic ,strong) CDZImagePickerActionsDataSource *actionsDataSource;
 @property (nonatomic ,strong) CDZImagePickerPhotosDataSource *photosDataSource;
-@property (nonatomic ,strong) UICollectionView *photosView;
 
+@property (nonatomic ,strong) UICollectionViewFlowLayout *photosFlowLayout;
 @end
 
 
@@ -51,18 +48,18 @@ static const float tableViewCellHeight = 54.0;
 
 + (void)openPickerInView:(UIView *)view inController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
     CDZImagePickerViewController *picker = [[CDZImagePickerViewController alloc]init];
-    picker.view.backgroundColor = [UIColor clearColor];
+    picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;//iOS8上默认presentviewcontroller不透明，需设置style
     picker.block = imageBlock;
     [controller presentViewController:picker animated:NO completion:nil];
 }
 
 - (void)dealloc{
-    NSLog(@"dealloc");
+    NSLog(@"ImagePicker已销毁");
 }
 
 #pragma mark - event response
 - (void)dissPicker:(UIGestureRecognizer *)gesture{
-    [self closeThisView];
+    [self closeSelfController];
 }
 
 - (void)didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
@@ -85,8 +82,8 @@ static const float tableViewCellHeight = 54.0;
         case CDZImagePickerLibraryAction:
             [self openLibrary];
             break;
-        case CDZImagePickerCancelAction:
-            [self closeThisView];
+        case CDZImagePickerCloseAction:
+            [self closeSelfController];
             break;
     }
     
@@ -98,6 +95,7 @@ static const float tableViewCellHeight = 54.0;
         pickerController.delegate = self;
         pickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
         [self presentViewController:pickerController animated:NO completion:nil];
+        NSLog(@"打开相机");
     }
 }
 
@@ -106,20 +104,38 @@ static const float tableViewCellHeight = 54.0;
     pickerController.delegate = self;
     pickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
     [self presentViewController:pickerController animated:NO completion:nil];
+    NSLog(@"打开图库");
     
 }
 
-- (void)closeThisView{
-    NSLog(@"Cancel");
+- (void)closeSelfController{
     [self dismissViewControllerAnimated:NO completion:nil];
+    NSLog(@"ImagePicker关闭");
 }
 
 - (void)openRecentImage{
-    
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        self.block(result);
+    }];
+    NSLog(@"打开最新图片");
+    [self closeSelfController];
+   
 }
 
 
+#pragma mark - private methods
 
+- (void)getAllPhotoWithBlock:(CDZImageAssetBlock)block{
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *collection in smartAlbums) {
+        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
+            PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+            for (PHAsset *asset in assets){
+                block(asset);
+            }
+        }
+    }
+}
 
 
 #pragma mark - imagePickerController delegate
@@ -131,41 +147,73 @@ static const float tableViewCellHeight = 54.0;
     }
     self.block(image);
     [picker dismissViewControllerAnimated:NO completion:nil];
-    NSLog(@"获取照片");
+    [self closeSelfController];
+    NSLog(@"从相机或图库获取图片");
 }
 
 #pragma mark - tableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return tableViewCellHeight;
+    return actionsViewCellHeight;
 }
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-   // CDZImagePickerActionsSection *sectionObject = self.actionsDataSource.sections[indexPath.row];
     CDZImagePickerActionsItem *item = self.actionArray[indexPath.row];
     [self doActionsWithType:item.actionType];
 }
 
 #pragma mark - collectionViewDelegate
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
+    PHAsset *photo = self.photosArray[indexPath.row];
+    CGFloat height = photosViewHeight - 2 * photosViewInset;
+    CGFloat aspectRatio = (CGFloat)photo.pixelWidth / (CGFloat)photo.pixelHeight;
+    CGFloat width = height * aspectRatio;
+    CGSize size = CGSizeMake(width, height);
+    return size;
+}
 
+- (UIEdgeInsets) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
+    return UIEdgeInsetsMake(photosViewInset, 0.0f, photosViewInset, 0.0f);
+}
 
-#pragma setter&getter
+- (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
+    return photosViewInset;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        self.block(result);
+    }];
+    NSLog(@"已选择图片");
+    [self closeSelfController];
+}
+
+#pragma views setter&getter
 - (UICollectionView *)photosView{
     if (!_photosView){
-        CGFloat photosViewHeight = 130;
-        UICollectionViewFlowLayout *layout = [UICollectionViewFlowLayout new];
-        layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        layout.itemSize = CGSizeMake(130, 130);
-        _photosView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT - self.actionView.height - photosViewHeight , SCREEN_WIDTH, photosViewHeight) collectionViewLayout:layout];
+        _photosView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT - actionsViewCellHeight * self.actionArray.count - photosViewHeight , SCREEN_WIDTH, photosViewHeight) collectionViewLayout:self.photosFlowLayout];
         _photosView.delegate = self;
         _photosView.dataSource = self.photosDataSource;
         _photosView.backgroundColor = [UIColor whiteColor];
-        [_photosView registerClass:[CDZImagePIckerPhotosCell class] forCellWithReuseIdentifier:NSStringFromClass([CDZImagePIckerPhotosCell class])];
+        _photosView.showsHorizontalScrollIndicator = NO;
+        [_photosView registerClass:[CDZImagePickerPhotosCell class] forCellWithReuseIdentifier:NSStringFromClass([CDZImagePickerPhotosCell class])];
     }
     return _photosView;
 }
 
+
+- (UITableView *)actionView{
+    if (!_actionView) {
+        CGFloat actionsViewHeight = actionsViewCellHeight * self.actionArray.count;
+        _actionView = [[UITableView alloc]initWithFrame:CGRectMake(0,SCREEN_HEIGHT - actionsViewHeight ,SCREEN_WIDTH, actionsViewHeight) style:UITableViewStylePlain];
+        _actionView.scrollEnabled = NO;
+        _actionView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _actionView.delegate = self;
+        _actionView.dataSource = self.actionsDataSource;
+    }
+    return _actionView;
+}
 
 - (UIView *)backgroundView{
     if (!_backgroundView){
@@ -178,16 +226,14 @@ static const float tableViewCellHeight = 54.0;
     return _backgroundView;
 }
 
-- (UITableView *)actionView{
-    if (!_actionView) {
-        CGFloat actionsViewHeight = tableViewCellHeight * self.actionArray.count;
-        _actionView = [[UITableView alloc]initWithFrame:CGRectMake(0,SCREEN_HEIGHT - actionsViewHeight ,SCREEN_WIDTH, actionsViewHeight) style:UITableViewStylePlain];
-        _actionView.scrollEnabled = NO;
-        _actionView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _actionView.delegate = self;
-        _actionView.dataSource = self.actionsDataSource;
+#pragma mark - property setter&getter
+
+- (UICollectionViewFlowLayout *)photosFlowLayout{
+    if (!_photosFlowLayout) {
+        _photosFlowLayout = [UICollectionViewFlowLayout new];
+        _photosFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     }
-    return _actionView;
+    return _photosFlowLayout;
 }
 
 
@@ -213,6 +259,7 @@ static const float tableViewCellHeight = 54.0;
                         [[CDZImagePickerActionsItem alloc]initWithTitle:@"图库" withActionType:CDZImagePickerLibraryAction withImage:nil],
                         [[CDZImagePickerActionsItem alloc]initWithTitle:@"拍照" withActionType:CDZImagePickerCameraAction withImage:nil],
                         [[CDZImagePickerActionsItem alloc]initWithTitle:@"最新" withActionType:CDZImagePickerRecentAction withImage:nil],
+                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"取消" withActionType:CDZImagePickerCloseAction withImage:nil],
                         nil];
     }
     return _actionArray;
@@ -224,23 +271,9 @@ static const float tableViewCellHeight = 54.0;
         [self getAllPhotoWithBlock:^(PHAsset *asset) {
             [_photosArray insertObject:asset atIndex:0];
         }];
-
+        NSLog(@"已加载%d张图片",(int)_photosArray.count);
     }
     return _photosArray;
 }
-
-
-- (void)getAllPhotoWithBlock:(CDZImageAssetBlock)block{
-    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-    for (PHAssetCollection *collection in smartAlbums) {
-        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
-            PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-            for (PHAsset *asset in assets){
-            block(asset);
-            }
-        }
-    }
-}
-
 
 @end

@@ -8,22 +8,21 @@
 
 #import "CDZImagePickerPhotosDataSource.h"
 #import "CDZImagePIckerPhotosCell.h"
-
 #import <Photos/Photos.h>
 
 @implementation CDZImagePickerPhotosDataSource
 
-#pragma mark - collectionViewDataSource
+#pragma mark - collectionViewDataSourceRequried
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
     return self.itemArray.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    CGSize size = CGSizeMake(100, 100);
-    CDZImagePIckerPhotosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([CDZImagePIckerPhotosCell class]) forIndexPath:indexPath];
-    [[PHImageManager defaultManager]requestImageForAsset:self.itemArray[indexPath.row] targetSize:size contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        [cell setCellFromImage:result];
+    CDZImagePickerPhotosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([CDZImagePickerPhotosCell class]) forIndexPath:indexPath];
+    CGRect cellFrame = cell.frame;
+    [[PHImageManager defaultManager]requestImageForAsset:self.itemArray[indexPath.row] targetSize:cellFrame.size contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+       cell.photoImageView.image = result;
     }];
     return cell;
 }
