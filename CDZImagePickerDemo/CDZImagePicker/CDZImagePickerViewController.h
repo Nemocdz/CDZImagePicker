@@ -11,6 +11,8 @@
 
 @interface CDZImagePickerViewController : UIViewController
 
-+ (void)openPickerInView:(UIView *)view inController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock;
+@property (nonatomic ,strong) NSMutableArray *actionArray;
+
+- (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock;
 
 @end

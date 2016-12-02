@@ -26,9 +26,9 @@ typedef NS_ENUM(NSInteger, CDZImagePickerActionType) {
     CDZImagePickerCloseAction
 };
 
-typedef void (^CDZImageResultBlock)(UIImage *image);
-typedef void (^CDZImageAssetBlock) (PHAsset *asset);
 
+typedef void (^CDZImageResultBlock) (UIImage *image);
+typedef void (^CDZImageAssetBlock) (PHAsset *asset);
 
 @interface CDZImagePickerConstant : NSObject
 

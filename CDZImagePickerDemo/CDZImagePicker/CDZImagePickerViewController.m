@@ -7,12 +7,11 @@
 //
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AVFoundation/AVFoundation.h>
-#import <MediaPlayer/MediaPlayer.h>
 #import <Photos/Photos.h>
+
 #import "CDZImagePickerViewController.h"
 
 #import "CDZImagePickerActionsItem.h"
-#import "CDZImagePickerActionsCell.h"
 #import "CDZImagePickerActionsDataSource.h"
 
 #import "CDZImagePIckerPhotosCell.h"
@@ -21,9 +20,8 @@
 @interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate>
 
 @property (nonatomic ,copy) CDZImageResultBlock block;
-
-@property (nonatomic ,strong) NSMutableArray *actionArray;
 @property (nonatomic ,strong) NSMutableArray *photosArray;
+@property (nonatomic ,strong) UIImage *resultImage;
 
 @property (nonatomic ,strong) UICollectionView *photosView;
 @property (nonatomic ,strong) UITableView *actionView;
@@ -33,6 +31,7 @@
 @property (nonatomic ,strong) CDZImagePickerPhotosDataSource *photosDataSource;
 
 @property (nonatomic ,strong) UICollectionViewFlowLayout *photosFlowLayout;
+
 @end
 
 
@@ -46,11 +45,16 @@
     [self.view addSubview:self.photosView];
 }
 
-+ (void)openPickerInView:(UIView *)view inController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
+
++ (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
     CDZImagePickerViewController *picker = [[CDZImagePickerViewController alloc]init];
-    picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;//iOS8上默认presentviewcontroller不透明，需设置style
-    picker.block = imageBlock;
-    [controller presentViewController:picker animated:NO completion:nil];
+    [picker openPickerInController:controller withImageBlock:imageBlock];
+}
+
+- (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
+    self.modalPresentationStyle = UIModalPresentationOverCurrentContext;//iOS8上默认presentviewcontroller不透明，需设置style
+    self.block = imageBlock;
+    [controller presentViewController:self animated:YES completion:nil];
 }
 
 - (void)dealloc{
@@ -62,11 +66,12 @@
     [self closeSelfController];
 }
 
-- (void)didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
     if(!error){
         NSLog(@"照片保存成功");
-    }else
+    }else{
         NSLog(@"照片保存失败");
+    }
 }
 
 
@@ -109,17 +114,18 @@
 }
 
 - (void)closeSelfController{
-    [self dismissViewControllerAnimated:NO completion:nil];
+    self.block(self.resultImage);
+    [self dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"ImagePicker关闭");
 }
 
 - (void)openRecentImage{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.block(result);
+       self.resultImage = result;
+        NSLog(@"打开最新图片");
+        [self closeSelfController];
     }];
-    NSLog(@"打开最新图片");
-    [self closeSelfController];
-   
+
 }
 
 
@@ -137,18 +143,18 @@
     }
 }
 
-
 #pragma mark - imagePickerController delegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(nonnull NSDictionary<NSString *,id> *)info{
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
-        UIImageWriteToSavedPhotosAlbum(image, self, @selector(didFinishSavingWithError:contextInfo:), NULL);
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
     }
-    self.block(image);
+    self.resultImage = image;
+    NSLog(@"从相机或图库获取图片");
     [picker dismissViewControllerAnimated:NO completion:nil];
     [self closeSelfController];
-    NSLog(@"从相机或图库获取图片");
+
 }
 
 #pragma mark - tableViewDelegate
@@ -163,7 +169,7 @@
     [self doActionsWithType:item.actionType];
 }
 
-#pragma mark - collectionViewDelegate
+#pragma mark - collectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
     PHAsset *photo = self.photosArray[indexPath.row];
     CGFloat height = photosViewHeight - 2 * photosViewInset;
@@ -181,12 +187,15 @@
     return photosViewInset;
 }
 
+#pragma mark - collectionViewDelegate
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.block(result);
+        self.resultImage = result;
+        NSLog(@"已选择图片");
+        [self closeSelfController];
+
     }];
-    NSLog(@"已选择图片");
-    [self closeSelfController];
 }
 
 #pragma views setter&getter
@@ -217,8 +226,8 @@
 
 - (UIView *)backgroundView{
     if (!_backgroundView){
-        _backgroundView =[[UIView alloc]initWithFrame:self.view.bounds];
-        _backgroundView.backgroundColor = BACKGROUND_BLACK_COLOR;
+        _backgroundView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - photosViewHeight - actionsViewCellHeight * self.actionArray.count)];
+        _backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _backgroundView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dissPicker:)];
         [_backgroundView addGestureRecognizer:tap];
@@ -257,8 +266,7 @@
     if (!_actionArray){
         _actionArray = [NSMutableArray arrayWithObjects:
                         [[CDZImagePickerActionsItem alloc]initWithTitle:@"图库" withActionType:CDZImagePickerLibraryAction withImage:nil],
-                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"拍照" withActionType:CDZImagePickerCameraAction withImage:nil],
-                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"最新" withActionType:CDZImagePickerRecentAction withImage:nil],
+                        [[CDZImagePickerActionsItem alloc]initWithTitle:@"相机" withActionType:CDZImagePickerCameraAction withImage:nil],
                         [[CDZImagePickerActionsItem alloc]initWithTitle:@"取消" withActionType:CDZImagePickerCloseAction withImage:nil],
                         nil];
     }
@@ -275,5 +283,7 @@
     }
     return _photosArray;
 }
+
+
 
 @end
