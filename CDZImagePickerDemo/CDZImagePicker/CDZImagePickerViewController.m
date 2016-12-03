@@ -29,9 +29,7 @@
 
 @property (nonatomic ,strong) CDZImagePickerActionsDataSource *actionsDataSource;
 @property (nonatomic ,strong) CDZImagePickerPhotosDataSource *photosDataSource;
-
 @property (nonatomic ,strong) UICollectionViewFlowLayout *photosFlowLayout;
-
 @end
 
 
@@ -45,11 +43,14 @@
     [self.view addSubview:self.photosView];
 }
 
-
-+ (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
-    CDZImagePickerViewController *picker = [[CDZImagePickerViewController alloc]init];
-    [picker openPickerInController:controller withImageBlock:imageBlock];
+- (void)viewWillDisappear:(BOOL)animated{
+    self.block(self.resultImage);
 }
+
+- (void)dealloc{
+    NSLog(@"ImagePicker已销毁");
+}
+
 
 - (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
     self.modalPresentationStyle = UIModalPresentationOverCurrentContext;//iOS8上默认presentviewcontroller不透明，需设置style
@@ -57,13 +58,9 @@
     [controller presentViewController:self animated:YES completion:nil];
 }
 
-- (void)dealloc{
-    NSLog(@"ImagePicker已销毁");
-}
-
 #pragma mark - event response
 - (void)dissPicker:(UIGestureRecognizer *)gesture{
-    [self closeSelfController];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
@@ -88,7 +85,7 @@
             [self openLibrary];
             break;
         case CDZImagePickerCloseAction:
-            [self closeSelfController];
+            [self closeAction];
             break;
     }
     
@@ -113,25 +110,24 @@
     
 }
 
-- (void)closeSelfController{
-    self.block(self.resultImage);
+- (void)closeAction{
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"ImagePicker关闭");
+    NSLog(@"关闭按钮");
 }
+
 
 - (void)openRecentImage{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-       self.resultImage = result;
+        self.resultImage = result;
+        [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"打开最新图片");
-        [self closeSelfController];
     }];
-
 }
 
 
 #pragma mark - private methods
 
-- (void)getAllPhotoWithBlock:(CDZImageAssetBlock)block{
+- (void)getAllPhotoWithBlock:(CDZAssetResultBlock)block{
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     for (PHAssetCollection *collection in smartAlbums) {
         if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
@@ -143,6 +139,7 @@
     }
 }
 
+
 #pragma mark - imagePickerController delegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(nonnull NSDictionary<NSString *,id> *)info{
@@ -151,10 +148,9 @@
         UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
     }
     self.resultImage = image;
-    NSLog(@"从相机或图库获取图片");
     [picker dismissViewControllerAnimated:NO completion:nil];
-    [self closeSelfController];
-
+    [self dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"从相机或图库获取图片");
 }
 
 #pragma mark - tableViewDelegate
@@ -171,16 +167,16 @@
 
 #pragma mark - collectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    PHAsset *photo = self.photosArray[indexPath.row];
+    PHAsset *asset = self.photosArray[indexPath.row];
     CGFloat height = photosViewHeight - 2 * photosViewInset;
-    CGFloat aspectRatio = (CGFloat)photo.pixelWidth / (CGFloat)photo.pixelHeight;
+    CGFloat aspectRatio = asset.pixelWidth / (CGFloat)asset.pixelHeight;
     CGFloat width = height * aspectRatio;
     CGSize size = CGSizeMake(width, height);
     return size;
 }
 
 - (UIEdgeInsets) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section{
-    return UIEdgeInsetsMake(photosViewInset, 0.0f, photosViewInset, 0.0f);
+    return UIEdgeInsetsMake(photosViewInset, photosViewInset, photosViewInset, photosViewInset);
 }
 
 - (CGFloat) collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section{
@@ -192,16 +188,16 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.resultImage = result;
+        [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"已选择图片");
-        [self closeSelfController];
-
     }];
 }
 
 #pragma views setter&getter
 - (UICollectionView *)photosView{
     if (!_photosView){
-        _photosView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT - actionsViewCellHeight * self.actionArray.count - photosViewHeight , SCREEN_WIDTH, photosViewHeight) collectionViewLayout:self.photosFlowLayout];
+        CGFloat actionsViewHeight = actionsViewCellHeight * self.actionArray.count;
+        _photosView = [[UICollectionView alloc]initWithFrame:CGRectMake(0, SCREEN_HEIGHT - actionsViewHeight - photosViewHeight , SCREEN_WIDTH, photosViewHeight) collectionViewLayout:self.photosFlowLayout];
         _photosView.delegate = self;
         _photosView.dataSource = self.photosDataSource;
         _photosView.backgroundColor = [UIColor whiteColor];
@@ -216,8 +212,8 @@
     if (!_actionView) {
         CGFloat actionsViewHeight = actionsViewCellHeight * self.actionArray.count;
         _actionView = [[UITableView alloc]initWithFrame:CGRectMake(0,SCREEN_HEIGHT - actionsViewHeight ,SCREEN_WIDTH, actionsViewHeight) style:UITableViewStylePlain];
-        _actionView.scrollEnabled = NO;
-        _actionView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _actionView.scrollEnabled = NO; //不需要滑动
+        _actionView.separatorStyle = UITableViewCellSeparatorStyleNone; //分割线去除
         _actionView.delegate = self;
         _actionView.dataSource = self.actionsDataSource;
     }
@@ -226,7 +222,8 @@
 
 - (UIView *)backgroundView{
     if (!_backgroundView){
-        _backgroundView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - photosViewHeight - actionsViewCellHeight * self.actionArray.count)];
+        CGFloat actionsViewHeight = actionsViewCellHeight * self.actionArray.count;
+        _backgroundView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - photosViewHeight - actionsViewHeight)];
         _backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
         _backgroundView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dissPicker:)];
@@ -240,7 +237,7 @@
 - (UICollectionViewFlowLayout *)photosFlowLayout{
     if (!_photosFlowLayout) {
         _photosFlowLayout = [UICollectionViewFlowLayout new];
-        _photosFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        _photosFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal; //水平滚动
     }
     return _photosFlowLayout;
 }

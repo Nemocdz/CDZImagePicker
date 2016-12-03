@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import <UIKit/UITableView.h>
 
 @interface CDZImagePickerActionsDataSource : NSObject<UITableViewDataSource>
 

@@ -37,7 +37,6 @@
         }
         [self.backgroundView removeFromSuperview];
     }];
-
 }
 
 - (UIView *)backgroundView{

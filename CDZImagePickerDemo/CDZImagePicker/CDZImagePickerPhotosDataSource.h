@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
-
+#import <UIKit/UICollectionView.h>
 
 @interface CDZImagePickerPhotosDataSource : NSObject<UICollectionViewDataSource>
 

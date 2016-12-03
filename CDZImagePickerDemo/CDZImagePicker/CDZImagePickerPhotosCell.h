@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
+@class PHAsset;
 
 @interface CDZImagePickerPhotosCell : UICollectionViewCell
 
-@property(nonatomic ,strong) UIImageView *photoImageView;
+- (void)setCellFromItem:(PHAsset *)asset;
 
 @end

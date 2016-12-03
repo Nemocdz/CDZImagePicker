@@ -7,7 +7,8 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <Photos/Photos.h>
+
+@class PHAsset;
 
 #define SCREEN_WIDTH ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT ([UIScreen mainScreen].bounds.size.height)
@@ -28,7 +29,7 @@ typedef NS_ENUM(NSInteger, CDZImagePickerActionType) {
 
 
 typedef void (^CDZImageResultBlock) (UIImage *image);
-typedef void (^CDZImageAssetBlock) (PHAsset *asset);
+typedef void (^CDZAssetResultBlock) (PHAsset *asset);
 
 @interface CDZImagePickerConstant : NSObject
 

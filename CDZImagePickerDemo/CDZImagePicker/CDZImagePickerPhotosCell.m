@@ -7,6 +7,13 @@
 //
 
 #import "CDZImagePickerPhotosCell.h"
+#import <Photos/PHImageManager.h>
+
+@interface CDZImagePickerPhotosCell()
+
+@property (nonatomic ,strong) UIImageView *photoImageView;
+
+@end
 
 @implementation CDZImagePickerPhotosCell
 
@@ -18,6 +25,18 @@
     return self;
 }
 
+- (void)layoutSubviews{
+    [super layoutSubviews];
+    self.photoImageView.frame = self.contentView.bounds;
+}
+
+- (void)setCellFromItem:(PHAsset *)asset{
+    CGRect cellFrame = self.frame;
+    [[PHImageManager defaultManager]requestImageForAsset:asset targetSize:cellFrame.size contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        self.photoImageView.image = result;
+    }];
+}
+
 - (UIImageView *)photoImageView{
     if (!_photoImageView) {
         _photoImageView = [[UIImageView alloc]init];
@@ -25,12 +44,5 @@
     }
     return _photoImageView;
 }
-
-
-- (void)layoutSubviews{
-    [super layoutSubviews];
-    self.photoImageView.frame = self.contentView.bounds;
-}
-
 
 @end

@@ -11,20 +11,7 @@
 
 @implementation CDZImagePickerActionsCell
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-}
-
-- (void)setCellFromItem:(CDZImagePickerActionsItem *)item{
-    self.textLabel.text = item.actionTitle;
-    self.imageView.image = item.actionImage;
-}
-
--(void)layoutSubviews{
+- (void)layoutSubviews{
     [super layoutSubviews];
     self.selectionStyle = UITableViewCellSelectionStyleNone;//点击不变色
     self.imageView.frame = CGRectMake(20, 15, 22, 22);
@@ -39,4 +26,12 @@
         self.textLabel.textAlignment = NSTextAlignmentCenter;
     }
 }
+
+
+- (void)setCellFromItem:(CDZImagePickerActionsItem *)item{
+    self.textLabel.text = item.actionTitle;
+    self.imageView.image = item.actionImage;
+}
+
+
 @end

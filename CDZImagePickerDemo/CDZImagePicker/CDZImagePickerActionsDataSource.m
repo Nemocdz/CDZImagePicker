@@ -8,8 +8,7 @@
 
 #import "CDZImagePickerActionsDataSource.h"
 #import "CDZImagePickerActionsCell.h"
-#import "CDZImagePickerActionsItem.h"
-
+@class CDZImagePickerActionsItem;
 
 @implementation CDZImagePickerActionsDataSource
 
@@ -23,7 +22,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     CDZImagePickerActionsItem *item = self.itemArray[indexPath.row];
     CDZImagePickerActionsCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([CDZImagePickerActionsCell class])];
-    if (cell == nil) {
+    if (!cell) {
         cell = [[CDZImagePickerActionsCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:NSStringFromClass([CDZImagePickerActionsCell class])];
     }
     [cell setCellFromItem:item];
