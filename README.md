@@ -1,7 +1,5 @@
 # CDZImagePicker
 
-------
-
 This is a ImagePickerController with  buttons of action and collection of photos.
 
 And the button can add beautiful icon like Snapseed used.
@@ -11,9 +9,6 @@ And the button can add beautiful icon like Snapseed used.
 ![ImagePickerDemo2](http://ww3.sinaimg.cn/large/006y8mN6gw1fai80p1okwg30ku1124oj.gif)
 
 ## Installation
-
-------
-
 ### Manual
 
 Add "CDZImagePicker" files to your project
@@ -58,7 +53,7 @@ Coming soon
 #import "CDZImagePickerActionsItem.h"
 ```
 
-​	And init the actionArray with CDZImagePickerActionItem with title, action, image and order you want.
+   And init the actionArray with CDZImagePickerActionItem with title, action, image and order you want.
 
 ```objective-c
 imagePickerController.actionArray = [NSMutableArray arrayWithObjects:  		[[CDZImagePickerActionsItem alloc]initWithTitle:@"打开设备上的图片" withActionType:CDZImagePickerLibraryAction withImage:[UIImage imageNamed:@"phone-icon.png"]],
@@ -67,37 +62,23 @@ imagePickerController.actionArray = [NSMutableArray arrayWithObjects:  		[[CDZIm
 ```
 
 ## Articles
-
-------
-
 [iOS中写一个仿Snapseed的ImagePickerController（照片选择器 )]（http://www.jianshu.com/p/e8e23e9cc67d）
 
 ## Requirements
-
-------
-
 iOS 8.0 Above
 
 ## TODO
-
-------
 
 - Memory optimize
 - Add Permisson Check
 - CollectionView Realtime Refresh
 
 ## Contact
-
-------
-
 - Open a issue
 - QQ：757765420
 - Email：nemocdz@gmail.com
 - Weibo：[@Nemocdz](http://weibo.com/nemocdz)
 
 ## License
-
-------
-
 CDZImagePicker is available under the MIT license. See the LICENSE file for more info.
 
