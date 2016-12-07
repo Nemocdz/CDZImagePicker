@@ -40,10 +40,11 @@ Coming soon
   Open "Info.plist" file in your project and add
 
 ```xml
- <key>NSCameraUsageDescription</key>    
- <string>cameraDesciption</string>
 
-<key>NSPhotoLibraryUsageDescription</key>    
+<key>NSCameraUsageDescription</key>
+<string>cameraDesciption</string>
+
+<key>NSPhotoLibraryUsageDescription</key>    
 <string>cameraDesciption</string>
 ```
 
@@ -56,9 +57,10 @@ Coming soon
    And init the actionArray with CDZImagePickerActionItem with title, action, image and order you want.
 
 ```objective-c
-imagePickerController.actionArray = [NSMutableArray arrayWithObjects:  		[[CDZImagePickerActionsItem alloc]initWithTitle:@"打开设备上的图片" withActionType:CDZImagePickerLibraryAction withImage:[UIImage imageNamed:@"phone-icon.png"]],
-[[CDZImagePickerActionsItem alloc]initWithTitle:@"相机" withActionType:CDZImagePickerCameraAction withImage:[UIImage imageNamed:@"camera-icon.png"]]
- [[CDZImagePickerActionsItem alloc]initWithTitle:@"打开最新图片" withActionType:CDZImagePickerRecentAction withImage:[UIImage imageNamed:@"clock-icon.png"]],  nil];
+imagePickerController.actionArray = [NSMutableArray arrayWithObjects:  
+[[CDZImagePickerActionsItem alloc]initWithTitle:@"打开设备上的图片" withActionType:CDZImagePickerLibraryAction withImage:[UIImage imageNamed:@"phone-icon.png"]],
+[[CDZImagePickerActionsItem alloc]initWithTitle:@"相机" withActionType:CDZImagePickerCameraAction withImage:[UIImage imageNamed:@"camera-icon.png"]
+[[CDZImagePickerActionsItem alloc]initWithTitle:@"打开最新图片" withActionType:CDZImagePickerRecentAction withImage:[UIImage imageNamed:@"clock-icon.png"]],  nil];
 ```
 
 ## Articles
