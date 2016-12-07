@@ -62,7 +62,7 @@ imagePickerController.actionArray = [NSMutableArray arrayWithObjects:  		[[CDZIm
 ```
 
 ## Articles
-[iOS中写一个仿Snapseed的ImagePickerController（照片选择器 )]（http://www.jianshu.com/p/e8e23e9cc67d）
+[iOS中写一个仿Snapseed的ImagePickerController（照片选择器 )](http://www.jianshu.com/p/e8e23e9cc67d)
 
 ## Requirements
 iOS 8.0 Above
