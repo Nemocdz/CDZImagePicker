@@ -40,12 +40,12 @@
     [super viewDidLoad];
     [self.view addSubview:self.backgroundView];
     [self.view addSubview:self.actionView];
-    [self.view addSubview:self.photosView];
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
+        [self.view addSubview:self.photosView];
+    }
+
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    self.block(self.resultImage);
-}
 
 - (void)dealloc{
     NSLog(@"ImagePicker已销毁");
@@ -55,12 +55,17 @@
 - (void)openPickerInController:(UIViewController *)controller withImageBlock:(CDZImageResultBlock)imageBlock{
     self.modalPresentationStyle = UIModalPresentationOverCurrentContext;//iOS8上默认presentviewcontroller不透明，需设置style
     self.block = imageBlock;
-    [controller presentViewController:self animated:YES completion:nil];
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusNotDetermined){
+        [self showPermissionAlertInController:controller];
+    }
+    else {
+        [controller presentViewController:self animated:YES completion:nil];
+    }
 }
 
 #pragma mark - event response
 - (void)dissPicker:(UIGestureRecognizer *)gesture{
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self closeAction];
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
@@ -112,22 +117,50 @@
 
 - (void)closeAction{
     [self dismissViewControllerAnimated:YES completion:nil];
-    NSLog(@"关闭按钮");
+    self.block(nil);
+    NSLog(@"关闭");
 }
 
 
 - (void)openRecentImage{
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.resultImage = result;
+        self.block(self.resultImage);
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"打开最新图片");
     }];
+    }
 }
 
 
 #pragma mark - private methods
 
-- (void)getAllPhotoWithBlock:(CDZAssetResultBlock)block{
+- (void)showPermissionAlertInController:(UIViewController *)controller{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"需要你的图库的权限" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [controller presentViewController:self animated:YES completion:nil];
+    }];
+    UIAlertAction *requestAction = [UIAlertAction actionWithTitle:@"允许" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if (status == PHAuthorizationStatusAuthorized) {
+                    NSLog(@"用户同意授权相册");
+                }else {
+                    NSLog(@"用户拒绝授权相册");
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [controller presentViewController:self animated:YES completion:nil];
+                });
+            }];
+
+        });
+    }];
+    [alert addAction:cancelAction];
+    [alert addAction:requestAction];
+    [controller presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)getAssetWithBlock:(CDZAssetResultBlock)block{
     PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     for (PHAssetCollection *collection in smartAlbums) {
         if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
@@ -147,7 +180,7 @@
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
         UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
     }
-    self.resultImage = image;
+    self.block(image);
     [picker dismissViewControllerAnimated:NO completion:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"从相机或图库获取图片");
@@ -161,7 +194,7 @@
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    CDZImagePickerActionsItem *item = self.actionArray[indexPath.row];
+    CDZImagePickerActionsItem *item = self.actionsDataSource.itemArray[indexPath.row];
     [self doActionsWithType:item.actionType];
 }
 
@@ -187,7 +220,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.resultImage = result;
+        self.block(result);
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"已选择图片");
     }];
@@ -224,7 +257,7 @@
     if (!_backgroundView){
         CGFloat actionsViewHeight = actionsViewCellHeight * self.actionArray.count;
         _backgroundView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - photosViewHeight - actionsViewHeight)];
-        _backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
+        _backgroundView.opaque = YES;
         _backgroundView.userInteractionEnabled = YES;
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dissPicker:)];
         [_backgroundView addGestureRecognizer:tap];
@@ -273,14 +306,12 @@
 - (NSMutableArray *)photosArray{
     if (!_photosArray){
         _photosArray = [NSMutableArray new];
-        [self getAllPhotoWithBlock:^(PHAsset *asset) {
+        [self getAssetWithBlock:^(PHAsset *asset) {
             [_photosArray insertObject:asset atIndex:0];
         }];
         NSLog(@"已加载%d张图片",(int)_photosArray.count);
     }
     return _photosArray;
 }
-
-
 
 @end

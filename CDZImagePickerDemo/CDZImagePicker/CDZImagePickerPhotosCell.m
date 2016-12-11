@@ -31,15 +31,19 @@
 }
 
 - (void)setCellFromItem:(PHAsset *)asset{
-    CGRect cellFrame = self.frame;
-    [[PHImageManager defaultManager]requestImageForAsset:asset targetSize:cellFrame.size contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.photoImageView.image = result;
-    }];
+    CGRect imageViewFrame = self.photoImageView.frame;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [[PHImageManager defaultManager]requestImageForAsset:asset targetSize:imageViewFrame.size contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.photoImageView.image = result;
+            });
+        }];
+   });
 }
 
 - (UIImageView *)photoImageView{
     if (!_photoImageView) {
-        _photoImageView = [[UIImageView alloc]init];
+        _photoImageView = [[UIImageView alloc]initWithFrame:self.contentView.bounds];
         _photoImageView.contentMode = UIViewContentModeScaleAspectFill;
     }
     return _photoImageView;

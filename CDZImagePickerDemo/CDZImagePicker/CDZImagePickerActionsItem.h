@@ -12,8 +12,8 @@
 
 @interface CDZImagePickerActionsItem : NSObject
 
-@property(nonatomic, retain) NSString *actionTitle;
-@property(nonatomic, retain) UIImage *actionImage;
+@property(nonatomic, copy) NSString *actionTitle;
+@property(nonatomic, strong) UIImage *actionImage;
 @property(nonatomic, assign) CDZImagePickerActionType actionType;
 
 - (instancetype)initWithTitle:(NSString *)titele withActionType:(CDZImagePickerActionType)type withImage:(UIImage *)image;
