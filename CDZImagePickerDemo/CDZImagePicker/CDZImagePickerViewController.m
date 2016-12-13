@@ -17,11 +17,12 @@
 #import "CDZImagePIckerPhotosCell.h"
 #import "CDZImagePickerPhotosDataSource.h"
 
-@interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate>
+@interface CDZImagePickerViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate,UITableViewDelegate,UIGestureRecognizerDelegate,UICollectionViewDelegate,PHPhotoLibraryChangeObserver>
 
 @property (nonatomic ,copy) CDZImageResultBlock block;
-@property (nonatomic ,strong) NSMutableArray *photosArray;
+
 @property (nonatomic ,strong) UIImage *resultImage;
+@property (nonatomic ,strong) PHFetchResult *imageAssetsResult;
 
 @property (nonatomic ,strong) UICollectionView *photosView;
 @property (nonatomic ,strong) UITableView *actionView;
@@ -38,6 +39,7 @@
 #pragma mark - about init
 - (void)viewDidLoad{
     [super viewDidLoad];
+    [[PHPhotoLibrary sharedPhotoLibrary]registerChangeObserver:self];
     [self.view addSubview:self.backgroundView];
     [self.view addSubview:self.actionView];
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
@@ -48,6 +50,7 @@
 
 
 - (void)dealloc{
+    [[PHPhotoLibrary sharedPhotoLibrary]unregisterChangeObserver:self];
     NSLog(@"ImagePicker已销毁");
 }
 
@@ -124,7 +127,7 @@
 
 - (void)openRecentImage{
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){
-    [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.block(self.resultImage);
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"打开最新图片");
@@ -160,16 +163,23 @@
     [controller presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)getAssetWithBlock:(CDZAssetResultBlock)block{
-    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
-    for (PHAssetCollection *collection in smartAlbums) {
-        if (collection.assetCollectionSubtype == PHAssetCollectionSubtypeSmartAlbumUserLibrary){
-            PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
-            for (PHAsset *asset in assets){
-                block(asset);
-            }
-        }
+- (NSMutableArray *)getImageAssets{
+    self.imageAssetsResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:nil];
+    NSMutableArray *assets = [NSMutableArray new];
+    for (PHAsset *asset in self.imageAssetsResult){
+        [assets insertObject:asset atIndex:0];
     }
+    return assets;
+}
+
+- (void)photoLibraryDidChange:(PHChange *)changeInfo {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        PHFetchResultChangeDetails *changes = [changeInfo changeDetailsForFetchResult:self.imageAssetsResult];
+        if (changes) {
+            self.photosDataSource.itemArray = [self getImageAssets];
+            [self.photosView reloadData];
+        }
+    });
 }
 
 
@@ -200,7 +210,7 @@
 
 #pragma mark - collectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    PHAsset *asset = self.photosArray[indexPath.row];
+    PHAsset *asset = self.photosDataSource.itemArray[indexPath.row];
     CGFloat height = photosViewHeight - 2 * photosViewInset;
     CGFloat aspectRatio = asset.pixelWidth / (CGFloat)asset.pixelHeight;
     CGFloat width = height * aspectRatio;
@@ -219,7 +229,7 @@
 #pragma mark - collectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    [[PHImageManager defaultManager]requestImageForAsset:self.photosArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.block(result);
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"已选择图片");
@@ -287,7 +297,7 @@
 - (CDZImagePickerPhotosDataSource *)photosDataSource{
     if (!_photosDataSource){
         _photosDataSource = [[CDZImagePickerPhotosDataSource alloc]init];
-        _photosDataSource.itemArray = self.photosArray;
+        _photosDataSource.itemArray = [self getImageAssets];
     }
     return _photosDataSource;
 }
@@ -303,15 +313,6 @@
     return _actionArray;
 }
 
-- (NSMutableArray *)photosArray{
-    if (!_photosArray){
-        _photosArray = [NSMutableArray new];
-        [self getAssetWithBlock:^(PHAsset *asset) {
-            [_photosArray insertObject:asset atIndex:0];
-        }];
-        NSLog(@"已加载%d张图片",(int)_photosArray.count);
-    }
-    return _photosArray;
-}
+
 
 @end
