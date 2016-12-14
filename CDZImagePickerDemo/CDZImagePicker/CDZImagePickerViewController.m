@@ -50,6 +50,7 @@
 
 
 - (void)dealloc{
+    self.block(self.resultImage);
     [[PHPhotoLibrary sharedPhotoLibrary]unregisterChangeObserver:self];
     NSLog(@"ImagePicker已销毁");
 }
@@ -68,7 +69,8 @@
 
 #pragma mark - event response
 - (void)dissPicker:(UIGestureRecognizer *)gesture{
-    [self closeAction];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    NSLog(@"点击空白处消失");
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
@@ -119,15 +121,14 @@
 
 - (void)closeAction{
     [self dismissViewControllerAnimated:YES completion:nil];
-    self.block(nil);
-    NSLog(@"关闭");
+    NSLog(@"关闭按钮");
 }
 
 
 - (void)openRecentImage{
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){
     [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.block(self.resultImage);
+        self.resultImage = result;
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"打开最新图片");
     }];
@@ -189,7 +190,7 @@
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
         UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
     }
-    self.block(image);
+    self.resultImage = image;
     [picker dismissViewControllerAnimated:NO completion:nil];
     [self dismissViewControllerAnimated:YES completion:nil];
     NSLog(@"从相机或图库获取图片");
@@ -229,7 +230,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        self.block(result);
+        self.resultImage = result;
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"已选择图片");
     }];
