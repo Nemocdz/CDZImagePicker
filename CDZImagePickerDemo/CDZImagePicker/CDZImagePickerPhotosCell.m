@@ -30,10 +30,10 @@
     self.photoImageView.frame = self.contentView.bounds;
 }
 
-- (void)setCellFromItem:(PHAsset *)asset{
+- (void)setItem:(PHAsset *)item{
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc]init];
     options.resizeMode = PHImageRequestOptionsResizeModeFast;
-    [[PHImageManager defaultManager]requestImageForAsset:asset targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager]requestImageForAsset:item targetSize:[UIScreen mainScreen].bounds.size contentMode:PHImageContentModeDefault options:options resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.photoImageView.image = result;
     }];
 }

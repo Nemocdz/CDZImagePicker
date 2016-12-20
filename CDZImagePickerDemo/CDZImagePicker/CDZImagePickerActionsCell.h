@@ -11,6 +11,6 @@
 
 @interface CDZImagePickerActionsCell : UITableViewCell
 
-- (void)setCellFromItem:(CDZImagePickerActionsItem *)item;
+@property (nonatomic,strong) CDZImagePickerActionsItem *item;
 
 @end

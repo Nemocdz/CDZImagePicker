@@ -11,6 +11,6 @@
 
 @interface CDZImagePickerPhotosCell : UICollectionViewCell
 
-- (void)setCellFromItem:(PHAsset *)asset;
+@property (nonatomic,strong) PHAsset *item;
 
 @end

@@ -28,7 +28,7 @@
 }
 
 
-- (void)setCellFromItem:(CDZImagePickerActionsItem *)item{
+- (void)setItem:(CDZImagePickerActionsItem *)item{
     self.textLabel.text = item.actionTitle;
     self.imageView.image = item.actionImage;
 }

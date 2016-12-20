@@ -8,7 +8,6 @@
 
 #import "CDZImagePickerPhotosDataSource.h"
 #import "CDZImagePIckerPhotosCell.h"
-@class PHAsset;
 
 @implementation CDZImagePickerPhotosDataSource
 
@@ -19,9 +18,8 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    PHAsset *item = self.itemArray[indexPath.row];
     CDZImagePickerPhotosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([CDZImagePickerPhotosCell class]) forIndexPath:indexPath];
-    [cell setCellFromItem:item];
+    cell.item = self.itemArray[indexPath.row];
     return cell;
 }
 
