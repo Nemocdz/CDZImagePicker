@@ -127,7 +127,7 @@
 
 - (void)openRecentImage{
     if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized){
-    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemsArray[0] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.resultImage = result;
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"打开最新图片");
@@ -163,7 +163,7 @@
     [controller presentViewController:alert animated:YES completion:nil];
 }
 
-- (NSMutableArray *)getImageAssets{
+- (NSArray *)getImageAssets{
     self.imageAssetsResult = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeImage options:nil];
     NSMutableArray *assets = [NSMutableArray new];
     for (PHAsset *asset in self.imageAssetsResult){
@@ -176,7 +176,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         PHFetchResultChangeDetails *changes = [changeInfo changeDetailsForFetchResult:self.imageAssetsResult];
         if (changes) {
-            self.photosDataSource.itemArray = [self getImageAssets];
+            self.photosDataSource.itemsArray = [self getImageAssets];
             [self.photosView reloadData];
         }
     });
@@ -210,7 +210,7 @@
 
 #pragma mark - collectionViewDelegateFlowLayout
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath{
-    PHAsset *asset = self.photosDataSource.itemArray[indexPath.row];
+    PHAsset *asset = self.photosDataSource.itemsArray[indexPath.row];
     CGFloat height = photosViewHeight - 2 * photosViewInset;
     CGFloat aspectRatio = asset.pixelWidth / (CGFloat)asset.pixelHeight;
     CGFloat width = height * aspectRatio;
@@ -229,7 +229,7 @@
 #pragma mark - collectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    [[PHImageManager defaultManager]requestImageForAsset:self.photosDataSource.itemsArray[indexPath.row] targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFill options:nil resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
         self.resultImage = result;
         [self dismissViewControllerAnimated:YES completion:nil];
         NSLog(@"已选择图片");
@@ -297,7 +297,7 @@
 - (CDZImagePickerPhotosDataSource *)photosDataSource{
     if (!_photosDataSource){
         _photosDataSource = [[CDZImagePickerPhotosDataSource alloc]init];
-        _photosDataSource.itemArray = [self getImageAssets];
+        _photosDataSource.itemsArray = [self getImageAssets];
     }
     return _photosDataSource;
 }

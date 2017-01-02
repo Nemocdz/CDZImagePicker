@@ -11,7 +11,7 @@
 
 @interface CDZImagePickerPhotosDataSource : NSObject<UICollectionViewDataSource>
 
-@property (nonatomic, strong) NSMutableArray *itemArray;
+@property (nonatomic, strong) NSArray *itemsArray;
 
 
 @end

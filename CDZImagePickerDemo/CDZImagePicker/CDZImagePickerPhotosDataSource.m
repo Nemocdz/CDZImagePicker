@@ -14,12 +14,12 @@
 #pragma mark - collectionViewDataSourceRequried
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.itemArray.count;
+    return self.itemsArray.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     CDZImagePickerPhotosCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([CDZImagePickerPhotosCell class]) forIndexPath:indexPath];
-    cell.item = self.itemArray[indexPath.row];
+    cell.item = self.itemsArray[indexPath.row];
     return cell;
 }
 
