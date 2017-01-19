@@ -21,7 +21,7 @@ Add "CDZImagePicker" files to your project
 
 ### CocoaPods
 
-Coming soon
+Add ``pod 'CDZImagePicker'`` in your Podfile
 
 ## Usage
 
