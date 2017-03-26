@@ -84,7 +84,6 @@ iOS 8.0 Above
 ## TODO
 
 - Memory optimize
-- Add Cocoapods
 
 ## Contact
 

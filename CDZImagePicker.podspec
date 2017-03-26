@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name         = "CDZImagePicker"
   s.version      = "1.0.0"
   s.summary      = "A beatiful Imagepickercontroller easy to use"
-  s.homepage     = "http://www.jianshu.com/u/6182291ed968"
+  s.homepage     = "https://github.com/Nemocdz/CDZImagePicker"
   s.license      = "MIT"
   s.authors      = { 'Nemocdz' => 'nemocdz@gmail.com'}
   s.platform     = :ios, "8.0"
